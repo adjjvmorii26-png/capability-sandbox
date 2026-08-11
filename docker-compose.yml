@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  token-service:
+    build:
+      context: service
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ORCHESTRATOR_SECRET=replace_with_secure_secret
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+  policy-service:
+    build:
+      context: supervisor
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
